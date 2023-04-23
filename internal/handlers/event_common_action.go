@@ -52,7 +52,10 @@ func (*ProcessMentionAction) Execute(a *ActionInfo) bool {
 	}
 	// 群聊判断是否提到机器人
 	if a.info.handlerType == GroupHandler {
-		return a.handler.judgeIfMentionMe(a.info.mention)
+		if a.handler.judgeIfMentionMe(a.info.mention) {
+			return true
+		}
+		return false
 	}
 	return false
 }
@@ -133,7 +136,7 @@ func (*BalanceAction) Execute(a *ActionInfo) bool {
 type RoleListAction struct { /*角色列表*/
 }
 
-func (rla *RoleListAction) Execute(a *ActionInfo) bool {
+func (*RoleListAction) Execute(a *ActionInfo) bool {
 	if _, foundSystem := utils.EitherTrimEqual(a.info.qParsed,
 		"/roles", "角色列表"); foundSystem {
 		//a.handler.sessionCache.Clear(*a.info.sessionId)
@@ -145,6 +148,17 @@ func (rla *RoleListAction) Execute(a *ActionInfo) bool {
 		//	a.info.msgId, system)
 		tags := initialization.GetAllUniqueTags()
 		SendRoleTagsCard(*a.ctx, a.info.sessionId, a.info.msgId, *tags)
+		return false
+	}
+	return true
+}
+
+type AIModeAction struct { /*AI模式*/
+}
+func (*AIModeAction) Execute(a *ActionInfo) bool {
+	if _, foundMode := utils.EitherCutPrefix(a.info.qParsed,
+		"/ai_mode", "AI模式"); foundMode {
+		SendAIModeListsCard(*a.ctx, a.info.sessionId, a.info.msgId, openai.AIModeStrs)
 		return false
 	}
 	return true

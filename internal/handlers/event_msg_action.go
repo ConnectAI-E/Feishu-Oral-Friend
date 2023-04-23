@@ -6,6 +6,7 @@ import (
 )
 
 type MessageAction struct { /*消息*/
+	chatgpt *openai.ChatGPT
 }
 
 func (*MessageAction) Execute(a *ActionInfo) bool {
@@ -13,7 +14,9 @@ func (*MessageAction) Execute(a *ActionInfo) bool {
 	msg = append(msg, openai.Messages{
 		Role: "user", Content: a.info.qParsed,
 	})
-	completions, err := a.handler.gpt.Completions(msg)
+	// get ai mode as temperature
+	aiMode := a.handler.sessionCache.GetAIMode(*a.info.sessionId)
+	completions, err := a.handler.gpt.Completions(msg, aiMode)
 	if err != nil {
 		replyMsg(*a.ctx, fmt.Sprintf(
 			"🤖️：消息机器人摆烂了，请稍后再试～\n错误信息: %v", err), a.info.msgId)

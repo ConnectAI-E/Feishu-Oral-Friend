@@ -9,12 +9,12 @@ import (
 	larkim "github.com/larksuite/oapi-sdk-go/v3/service/im/v1"
 )
 
+type HandlerType string
+
 type MessageHandlerInterface interface {
 	msgReceivedHandler(ctx context.Context, event *larkim.P2MessageReceiveV1) error
 	cardHandler(ctx context.Context, cardAction *larkcard.CardAction) (interface{}, error)
 }
-
-type HandlerType string
 
 const (
 	GroupHandler = "group"
@@ -24,7 +24,7 @@ const (
 // handlers 所有消息类型类型的处理器
 var handlers MessageHandlerInterface
 
-func InitHandlers(gpt *openai.ChatGPT, config initialization.Config) {
+func InitHandlers(gpt *openai.ChatGPT, config initialization.Config){
 	handlers = NewMessageHandler(gpt, config)
 }
 
@@ -44,19 +44,6 @@ func CardHandler() func(ctx context.Context,
 		//handlerType := judgeCardType(cardAction)
 		return handlers.cardHandler(ctx, cardAction)
 	}
-}
-
-func judgeCardType(cardAction *larkcard.CardAction) HandlerType {
-	actionValue := cardAction.Action.Value
-	chatType := actionValue["chatType"]
-	//fmt.Printf("chatType: %v", chatType)
-	if chatType == "group" {
-		return GroupHandler
-	}
-	if chatType == "personal" {
-		return UserHandler
-	}
-	return "otherChat"
 }
 
 func judgeChatType(event *larkim.P2MessageReceiveV1) HandlerType {

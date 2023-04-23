@@ -23,19 +23,17 @@ type Config struct {
 	KeyFile                    string
 	OpenaiApiUrl               string
 	HttpProxy                  string
-	QdrantHost                 string
-	QdrantCollection           string
+	AzureOn                    bool
+	AzureApiVersion            string
+	AzureDeploymentName        string
+	AzureResourceName          string
+	AzureOpenaiToken           string
 }
 
 func LoadConfig(cfg string) *Config {
 	viper.SetConfigFile(cfg)
 	viper.ReadInConfig()
 	viper.AutomaticEnv()
-	//content, err := ioutil.ReadFile("config.yaml")
-	//if err != nil {
-	//	fmt.Println("Error reading file:", err)
-	//}
-	//fmt.Println(string(content))
 
 	config := &Config{
 		FeishuAppId:                getViperStringValue("APP_ID", ""),
@@ -51,8 +49,6 @@ func LoadConfig(cfg string) *Config {
 		KeyFile:                    getViperStringValue("KEY_FILE", "key.pem"),
 		OpenaiApiUrl:               getViperStringValue("API_URL", "https://api.openai.com"),
 		HttpProxy:                  getViperStringValue("HTTP_PROXY", ""),
-		QdrantHost:                 getViperStringValue("QDRANT_HOST", "http://localhost:6333"),
-		QdrantCollection:           getViperStringValue("QDRANT_COLLECTION", "oral-friend"),
 	}
 
 	return config

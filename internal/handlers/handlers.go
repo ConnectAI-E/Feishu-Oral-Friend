@@ -9,10 +9,14 @@ import (
 	"strings"
 
 	larkcard "github.com/larksuite/oapi-sdk-go/v3/card"
-
 	larkim "github.com/larksuite/oapi-sdk-go/v3/service/im/v1"
 )
-
+type MessageHandler struct {
+	sessionCache services.SessionServiceCacheInterface
+	msgCache     services.MsgCacheInterface
+	gpt          *openai.ChatGPT
+	config       initialization.Config
+}
 // 责任链
 func chain(data *ActionInfo, actions ...Action) bool {
 	for _, v := range actions {
@@ -21,19 +25,6 @@ func chain(data *ActionInfo, actions ...Action) bool {
 		}
 	}
 	return true
-}
-
-type MessageHandler struct {
-	sessionCache services.SessionServiceCacheInterface
-	msgCache     services.MsgCacheInterface
-	gpt          *openai.ChatGPT
-	config       initialization.Config
-}
-
-func (m MessageHandler) cardHandler(ctx context.Context,
-	cardAction *larkcard.CardAction) (interface{}, error) {
-	messageHandler := NewCardHandler(m)
-	return messageHandler(ctx, cardAction)
 }
 
 func judgeMsgType(event *larkim.P2MessageReceiveV1) (string, error) {
@@ -47,6 +38,13 @@ func judgeMsgType(event *larkim.P2MessageReceiveV1) (string, error) {
 	}
 
 }
+
+func (m MessageHandler) cardHandler(ctx context.Context,
+	cardAction *larkcard.CardAction) (interface{}, error) {
+	messageHandler := NewCardHandler(m)
+	return messageHandler(ctx, cardAction)
+}
+
 
 func (m MessageHandler) msgReceivedHandler(ctx context.Context, event *larkim.P2MessageReceiveV1) error {
 	handlerType := judgeChatType(event)
@@ -94,12 +92,11 @@ func (m MessageHandler) msgReceivedHandler(ctx context.Context, event *larkim.P2
 		&AudioAction{},           //语音处理
 		&EmptyAction{},           //空消息处理
 		&ClearAction{},           //清除消息处理
-		&PicAction{},             //图片处理
+		&AIModeAction{},          //模式切换处理
 		&RoleListAction{},        //角色列表处理
 		&HelpAction{},            //帮助处理
 		&BalanceAction{},         //余额处理
 		&RolePlayAction{},        //角色扮演处理
-		&VkmAction{},             //知识库处理
 		&MessageAction{},         //消息处理
 
 	}
@@ -125,4 +122,12 @@ func (m MessageHandler) judgeIfMentionMe(mention []*larkim.
 		return false
 	}
 	return *mention[0].Name == m.config.FeishuBotName
+}
+
+func AzureModeCheck(a *ActionInfo) bool {
+	if a.handler.config.AzureOn {
+		//sendMsg(*a.ctx, "Azure Openai 接口下，暂不支持此功能", a.info.chatId)
+		return false
+	}
+	return true
 }

@@ -13,14 +13,10 @@ type CardHandlerMeta func(cardMsg CardMsg, m MessageHandler) CardHandlerFunc
 type CardHandlerFunc func(ctx context.Context, cardAction *larkcard.CardAction) (
 	interface{}, error)
 
-var ErrNextHandler = fmt.Errorf("next handler")
+	var ErrNextHandler = fmt.Errorf("next handler")
 
 func NewCardHandler(m MessageHandler) CardHandlerFunc {
 	handlers := []CardHandlerMeta{
-		NewClearCardHandler,
-		NewPicResolutionHandler,
-		NewPicTextMoreHandler,
-		NewPicModeChangeHandler,
 		NewRoleTagCardHandler,
 		NewRoleCardHandler,
 	}
