@@ -2,8 +2,10 @@ package initialization
 
 import (
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"log"
+	"os"
 
 	"github.com/duke-git/lancet/v2/slice"
 	"github.com/duke-git/lancet/v2/validator"
@@ -20,6 +22,8 @@ var RoleList *[]Role
 
 // InitRoleList 加载Prompt
 func InitRoleList() *[]Role {
+	wd, err := os.Getwd()
+	fmt.Println(wd)
 	data, err := ioutil.ReadFile("role_list.yaml")
 	if err != nil {
 		log.Fatal(err)

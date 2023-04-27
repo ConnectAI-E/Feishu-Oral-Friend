@@ -17,7 +17,6 @@ type MsgInfo struct {
 	chatId      *string
 	qParsed     string
 	fileKey     string
-	imageKey    string
 	sessionId   *string
 	mention     []*larkim.MentionEvent
 }

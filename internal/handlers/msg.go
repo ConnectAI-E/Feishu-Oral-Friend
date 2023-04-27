@@ -210,7 +210,16 @@ func replyCard(ctx context.Context,
 	cardContent string,
 ) error {
 	client := initialization.GetLarkClient()
-	resp, err := client.Im.Message.Reply(ctx, larkim.NewReplyMessageReqBuilder().
+	// resp, err := client.Im.Message.Reply(ctx, larkim.NewReplyMessageReqBuilder().
+	// 	MessageId(*msgId).
+	// 	Body(larkim.NewReplyMessageReqBodyBuilder().
+	// 		MsgType(larkim.MsgTypeInteractive).
+	// 		Uuid(uuid.New().String()).
+	// 		Content(cardContent).
+	// 		Build()).
+	// 	Build())
+
+		resp, err := client.Im.Message.Reply(ctx, larkim.NewReplyMessageReqBuilder().
 		MessageId(*msgId).
 		Body(larkim.NewReplyMessageReqBodyBuilder().
 			MsgType(larkim.MsgTypeInteractive).
@@ -218,6 +227,7 @@ func replyCard(ctx context.Context,
 			Content(cardContent).
 			Build()).
 		Build())
+
 
 	// 处理错误
 	if err != nil {
