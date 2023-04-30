@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"oral-friend/pkg/openai"
+	"oral-friend/pkg/utils/texttospeech"
 )
 
 type MessageAction struct { /*消息*/
@@ -32,6 +33,7 @@ func (*MessageAction) Execute(a *ActionInfo) bool {
 		return false
 	}
 	err = replyMsg(*a.ctx, completions.Content, a.info.msgId)
+	texttospeech.Transform(completions.Content)
 	if err != nil {
 		replyMsg(*a.ctx, fmt.Sprintf(
 			"🤖️：消息机器人摆烂了，请稍后再试～\n错误信息: %v", err), a.info.msgId)

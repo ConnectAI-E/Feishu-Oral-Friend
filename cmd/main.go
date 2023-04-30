@@ -6,6 +6,7 @@ import (
 	"oral-friend/internal/handlers"
 	"oral-friend/internal/initialization"
 	"oral-friend/pkg/openai"
+	"oral-friend/pkg/utils/api2d"
 
 	"github.com/gin-gonic/gin"
 	sdkginext "github.com/larksuite/oapi-sdk-gin"
@@ -20,6 +21,7 @@ var (
 )
 
 func main() {
+	api2d.TextToSpeech()
 	initialization.InitRoleList()
 	config := initialization.LoadConfig(*cfg)
 	initialization.LoadLarkClient(*config)
